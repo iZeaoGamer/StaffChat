@@ -138,7 +138,7 @@ class StaffChat extends PluginBase implements Listener
     return $message;
   }
 
-  public function onCommand(CommandSender $sender,Command $command,strung $label,array $args) : bool{
+  public function onCommand(CommandSender $sender,Command $command,string $label,array $args) : bool{
     if(!isset($args[0])) $args[0] = "help";
     switch($args[0]){
       case "help":
