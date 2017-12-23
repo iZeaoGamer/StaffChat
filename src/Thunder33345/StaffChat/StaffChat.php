@@ -138,8 +138,7 @@ class StaffChat extends PluginBase implements Listener
     return $message;
   }
 
-  public function onCommand(CommandSender $sender,Command $command,$label,array $args)
-  {
+  public function onCommand(CommandSender $sender,Command $command,strung $label,array $args) : bool{
     if(!isset($args[0])) $args[0] = "help";
     switch($args[0]){
       case "help":
@@ -152,12 +151,14 @@ class StaffChat extends PluginBase implements Listener
          'author - show author info',//' - ',
         ];
         foreach($msgs as $msg) $sender->sendMessage(TextFormat::GOLD."Staff Chat Help> ".$msg);
+        return true;
         break;
       case "say":
         if($sender->hasPermission(self::permChat) OR $sender instanceof ConsoleCommandSender) {
           array_shift($args);
           $this->consoleBroadcast($sender,implode(" ",$args));
         } else $sender->sendMessage(self::errPerm);
+        return true;
         break;
 
       case "on":
@@ -167,6 +168,7 @@ class StaffChat extends PluginBase implements Listener
             $sender->sendMessage(TextFormat::GREEN.'[ON] All messages will now go directly into STAFF chat!');
           } else $sender->sendMessage('Please run this command as player');
         } else $sender->sendMessage(self::errPerm);
+        return true;
         break;
       case "off":
         if($sender->hasPermission(self::permRead)) {
@@ -175,6 +177,7 @@ class StaffChat extends PluginBase implements Listener
             $sender->sendMessage(TextFormat::GREEN.'[OFF] All messages will now go into NORMAL chat!');
           } else $sender->sendMessage('Please run this command as player');
         } else $sender->sendMessage(self::errPerm);
+        return true;
         break;
       case "toggle":
         if($sender->hasPermission(self::permRead)) {
@@ -183,15 +186,18 @@ class StaffChat extends PluginBase implements Listener
             $sender->sendMessage(TextFormat::GREEN."Staff Chat: ".$this->getReadableState($sender));
           } else $sender->sendMessage('Please run this command as player');
         } else $sender->sendMessage(self::errPerm);
+        return true;
         break;
 
       case "reload":
         if(!$sender->hasPermission('staffchat.reload')) {
           $sender->sendMessage(self::errPerm);
+          return true;
           break;
         }
         $this->flush();
         $sender->sendMessage(TextFormat::GREEN."Successfully flushed internal data...");
+        return true;
         break;
       case "attach":
         if(!$sender->hasPermission('staffchat.attach') AND !$sender instanceof ConsoleCommandSender) $sender->sendMessage(self::errPerm);
@@ -200,22 +206,26 @@ class StaffChat extends PluginBase implements Listener
           case "true":
             $this->setConsoleState(true);
             $this->getLogger()->notice("Console has been attached to staff chat by ".$sender->getName());
+            return true;
             break;
           case "false":
           case "off":
             $this->getLogger()->notice("Console has been detach from staff chat by ".$sender->getName());
             $this->setConsoleState(false);
+            return true;
             break;
           default:
             $sender->sendMessage("/staffchat attach <true|false>");
+            return true;
             break;
         } else $sender->sendMessage("/staffchat attach <true|false>");
         $sender->sendMessage(TextFormat::GREEN.'Console State: '.$this->getReadableConsoleState());
+        return true;
         break;
       case "check":
         if(!$sender->hasPermission('staffchat.check')) {
           $sender->sendMessage(self::errPerm);
-          return;
+          return true;
         }
         if(!isset($args[1])) {
           if($sender instanceof Player) {
@@ -228,7 +238,7 @@ class StaffChat extends PluginBase implements Listener
         }
         if(($player = $this->getServer()->getPlayer($args[1])) === null) {
           $sender->sendMessage('Player "'.$args[1].'" cant be found');
-          return;
+          return true;
         }
         $sender->sendMessage('Status of "'.$player->getName().'"');
         $sender->sendMessage('Can chat: '.$this->readableTrueFalse($player->hasPermission(self::permChat)),'yes','no');
@@ -238,7 +248,7 @@ class StaffChat extends PluginBase implements Listener
       case "list":
         if(!$sender->hasPermission('staffchat.list')) {
           $sender->sendMessage(self::errPerm);
-          return;
+          return true;
         }
         $canChatAndRead = [];
         $canChat = [];
@@ -258,6 +268,7 @@ class StaffChat extends PluginBase implements Listener
         if(count($canRead) > 0) $sender->sendMessage('Can Read('.count($canRead).') :'.implode(',',$canChat));
         if(count($chatting) > 0) $sender->sendMessage('Is Chatting('.count($chatting).'): '.implode(',',$chatting));
         $sender->sendMessage('End Of Info List');
+        return true;
         break;
       case "author":
       case "authors":
@@ -273,9 +284,11 @@ class StaffChat extends PluginBase implements Listener
         $sender->sendMessage(TextFormat::GREEN.'My Github: github.com/Thunder33345');
         $sender->sendMessage(TextFormat::GREEN.'My Plugin Github: github.com/ThunderDoesPlugins Go over there to grab some free goodies like this!');
         $sender->sendMessage(TextFormat::GREEN.'My Personal Twitter Account: twitter.com/Thunder33345 or @thunder33345 (feel free to ask for bug fixes!)');
+        return true;
         break;
       default:
         $sender->sendMessage(TextFormat::RED."Command Not Found");
+        return true;
         break;
     }
   }
@@ -307,14 +320,14 @@ class StaffChat extends PluginBase implements Listener
     if($sub === $this->prefix) {
       $event->setCancelled(true);
       if(!$player->hasPermission(self::permChat)) {
-        return;
+        return true;
       }
       $message = substr($message,strlen($this->prefix));
       $this->playerBroadcast($player,$message);
     } elseif($this->isChatting($player)) {
       if(!$player->hasPermission(self::permChat)) {
         $this->setChatting($player,false);
-        return;
+        return true;
       }
       $event->setCancelled(true);
       $this->playerBroadcast($player,$message);
