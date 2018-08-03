@@ -18,17 +18,17 @@ permissions:
     default: false
     children:
       staffchat.read:
-        default: op
+        default: false
         description: "Read from staff chat"
       staffchat.chat:
-        default: op
+        default: false
         description: "Chat into staff chat"
       staffchat.attach:
         default: op
         description: "Attach console into staff chat"
       staffchat.check:
-        default: op
+        default: false
         description: "Check other players status"
       staffchat.list:
-        default: op
+        default: false
         description: "Show info list of players"
