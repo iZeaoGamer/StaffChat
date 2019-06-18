@@ -270,7 +270,7 @@ class StaffChat extends PluginBase implements Listener
         $canChatAndRead = [];
         $canChat = [];
         $canRead = [];
-        foreach($this->getServer()->getOnlinePlayers() as $onlinePlayer){
+        foreach($this->getServer()->getLoggedInPlayers() as $onlinePlayer){
           if($onlinePlayer->hasPermission(self::permChat) AND $onlinePlayer->hasPermission(self::permRead)){
             $canChatAndRead[] = $onlinePlayer->getName();
           }else{
@@ -279,7 +279,7 @@ class StaffChat extends PluginBase implements Listener
           }
         }
         $chatting = $this->getChatting();
-        $sender->sendMessage('Info List Of Online Players');
+        $sender->sendMessage('Info List Of Online Staff Members');
         if(count($canChatAndRead) > 0) $sender->sendMessage('Can Chat And Read('.count($canChatAndRead).') :'.implode(',', $canChatAndRead));
         if(count($canChat) > 0) $sender->sendMessage('Can Chat('.count($canChat).') :'.implode(',', $canChat));
         if(count($canRead) > 0) $sender->sendMessage('Can Read('.count($canRead).') :'.implode(',', $canChat));
@@ -502,7 +502,7 @@ class StaffChat extends PluginBase implements Listener
   public function getReadPlayers()
   {
     $players = [];
-    foreach($this->getServer()->getOnlinePlayers() as $player) if($player->hasPermission(self::permRead)) $players[] = $player;
+    foreach($this->getServer()->getLoggedInPlayers() as $player) if($player->hasPermission(self::permRead)) $players[] = $player;
     return $players;
   }
 
